@@ -1,34 +1,46 @@
 import { GraphQLServer } from 'graphql-yoga';
 
+// Scalar types = String, Boolean, Int, Float, ID
+
 // Type definitions (schema)
 const typeDefs = `
   type Query {
-    hello: String!,
-    name: String!,
-    location: String!,
-    bio: String!
+   greeting(name: String!, position: String): String!
+   me: User!
+   post: Post!
+   add(a: Float!, b: Float!): Float!
+  }
+
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
+  }
+
+  type Post {
+    id: ID!
+    title: String!
+    body: String!
+    published: Int
   }
 `
 
 // Resolvers
 const resolvers = {
   Query: {
-    hello() {
-      return 'Hello world'
+    greeting(parent, args, ctx, info) { return `Greetings ${args.name}! You are at ${args.position}`},
+    add(parent, args, ctx, info) { return args.a + args.b},
+    me() {
+      return { id: 'ano', name: 'name', email: 'culo@culo.com' }
     },
-    name() {
-      return 'Me llamo Ramon Salazar'
-    },
-    location() {
-      return 'Ciudad de Mexico'
-    },
-    bio() {
-      return 'Me gustan los shots'
+    post() {
+      return { id: 'p1', title: 'The post', body: 'This is one of the best posts', published: 2018 }
     }
   }
 }
 
-const server = new GraphQLServer({typeDefs, resolvers});
+const server = new GraphQLServer({ typeDefs, resolvers });
 
 server.start(() => {
   console.log('The server is up!');
